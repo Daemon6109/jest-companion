@@ -1,0 +1,11 @@
+# Jest-Lua Companion Configuration
+# Configure how Jest-Lua tests should be run via OpenCloud
+
+# These are the locations of your test files (descendants are searched too)
+roots = ["src/tests", "tests"]
+
+[extraOptions]
+# Optional: Jest-Lua specific options can be added here
+# These will be passed to the test runner
+# showTimingInfo = true
+# testNamePattern = ".*"

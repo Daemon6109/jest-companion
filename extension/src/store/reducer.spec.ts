@@ -1,7 +1,7 @@
 import reducer from "./reducer";
 import DEFAULT_STORE_STATE from "./defaultStoreState";
 import SAMPLE_RESULTS from "../sampleTestEZOutput";
-import { PlaceList } from "../testResultProviders/httpTestResultProviderGenerator";
+import { PlaceList } from "./StoreTypes";
 
 const SAMPLE_GUID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
 

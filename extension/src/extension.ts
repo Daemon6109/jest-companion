@@ -8,9 +8,7 @@ import {
 import { IStoreAction, IStoreState } from "./store/StoreTypes";
 import * as vscode from "vscode";
 import flattenedTestResultsProvider from "./vscode/flattenedTestSummaryTreeDataProvider";
-import installPluginCommand from "./vscode/commands/installPlugin";
 import runTestsCommand from "./vscode/commands/runTests";
-import selectPlaceCommand from "./vscode/commands/selectPlace";
 import openTestErrorCommand from "./vscode/commands/openTestError";
 import testSummaryTreeDataProvider from "./vscode/testSummaryTreeDataProvider";
 import reducer from "./store/reducer";
@@ -44,7 +42,7 @@ const refreshFsWatcher = () => {
 };
 
 export async function activate(context: vscode.ExtensionContext) {
-	const outputChannel = vscode.window.createOutputChannel("TestEZ Companion");
+	const outputChannel = vscode.window.createOutputChannel("Jest-Lua Companion");
 
 	const testTreeDataProviders: testSummaryTreeDataProvider[] = (
 		["Success", "Failure", "Skipped"] as const
@@ -58,29 +56,20 @@ export async function activate(context: vscode.ExtensionContext) {
 		provider.onDidChangeTreeData = emitter.event;
 		return emitter;
 	});
-
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			"testez-companion.installPlugin",
-			installPluginCommand
-		),
-		vscode.commands.registerCommand(
-			"testez-companion.runTests",
+			"jest-lua-companion.runTests",
 			runTestsCommand
 		),
 		vscode.commands.registerCommand(
-			"testez-companion.selectPlace",
-			selectPlaceCommand
-		),
-		vscode.commands.registerCommand(
-			"testez-companion.openTestError",
+			"jest-lua-companion.openTestError",
 			openTestErrorCommand
 		),
 		...[
-			"testez-companion_passingTests",
-			"testez-companion_failingTests",
-			"testez-companion_skippedTests",
-			"testez-companion_results",
+			"jest-lua-companion_passingTests",
+			"jest-lua-companion_failingTests",
+			"jest-lua-companion_skippedTests",
+			"jest-lua-companion_results",
 		].map((name, i) =>
 			vscode.window.registerTreeDataProvider(
 				name,
@@ -88,12 +77,12 @@ export async function activate(context: vscode.ExtensionContext) {
 			)
 		),
 		outputChannel,
-		vscode.workspace.onDidChangeConfiguration((e) => {
+		vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
 			if (
 				e.affectsConfiguration(
-					"testez-companion.runTestsOnSaveFilter"
+					"jest-lua-companion.runTestsOnSaveFilter"
 				) ||
-				e.affectsConfiguration("testez-companion.runTestsOnSave")
+				e.affectsConfiguration("jest-lua-companion.runTestsOnSave")
 			)
 				refreshFsWatcher();
 		})
@@ -107,11 +96,10 @@ export async function activate(context: vscode.ExtensionContext) {
 			((payload.messageType === 2 && "[🟡WARN]") ||
 				(payload.messageType === 3 && "[🔴ERROR]") ||
 				"[🔵INFO]") +
-				"\n" +
-				payload.message
+			"\n" +
+			payload.message
 		);
 	};
-
 	const sideEffectMiddleware: Middleware<
 		{},
 		IStoreState,
@@ -126,9 +114,9 @@ export async function activate(context: vscode.ExtensionContext) {
 				vscode.window.withProgress(
 					{
 						location: {
-							viewId: "testez-companion_results",
+							viewId: "jest-lua-companion_results",
 						},
-						title: "TestEZ",
+						title: "Jest-Lua",
 					},
 					() => progressBarPromise
 				);
@@ -146,7 +134,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			}
 			case "GOT_TEST_RESULTS": {
 				const { results } = action;
-				console.log("Got TestEZ results:");
+				console.log("Got Jest-Lua results:");
 				console.log(results);
 
 				stopProgressBar();

@@ -1,9 +1,12 @@
 import Log from "../LogServiceMessage";
-import {
-	PlaceGUID,
-	PlaceList,
-} from "../testResultProviders/httpTestResultProviderGenerator";
 import TestResultProviderOutput from "../testResultProviders/TestResultProviderOutput";
+
+export type PlaceGUID = string;
+export type PlaceList = {
+	placeId: string;
+	placeName: string;
+	placeGUID: PlaceGUID;
+}[];
 
 export interface IStoreState {
 	waitingForTestResults: boolean;
@@ -15,33 +18,33 @@ export interface IStoreState {
 
 export type IStoreAction =
 	| {
-			type: "STARTED_RUNNING_TESTS";
-	  }
+		type: "STARTED_RUNNING_TESTS";
+	}
 	| {
-			type: "GOT_TEST_RESULTS";
-			results: TestResultProviderOutput;
-	  }
+		type: "GOT_TEST_RESULTS";
+		results: TestResultProviderOutput;
+	}
 	| {
-			type: "TESTING_FAILED";
-			reason?: string;
-	  }
+		type: "TESTING_FAILED";
+		reason?: string;
+	}
 	| {
-			type: "PLACE_SELECTED";
-			placeGUID: IStoreState["selectedPlaceGUID"];
-	  }
+		type: "PLACE_SELECTED";
+		placeGUID: IStoreState["selectedPlaceGUID"];
+	}
 	| {
-			type: "GOT_AVAILABLE_PLACES";
-			places: IStoreState["lastAvailablePlaces"];
-	  }
+		type: "GOT_AVAILABLE_PLACES";
+		places: IStoreState["lastAvailablePlaces"];
+	}
 	| {
-			type: "GOT_CONSOLE_MESSAGE";
-			payload: Log;
-	  }
+		type: "GOT_CONSOLE_MESSAGE";
+		payload: Log;
+	}
 	| {
-			type: "LOG_ERRORS";
-			errors: string[];
-	  }
+		type: "LOG_ERRORS";
+		errors: string[];
+	}
 	| {
-			type: "TEST_RUN_GOT_AUTO_INVOKED";
-			time: number;
-	  };
+		type: "TEST_RUN_GOT_AUTO_INVOKED";
+		time: number;
+	};

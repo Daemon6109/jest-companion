@@ -1,76 +1,69 @@
-[marketplace-shield]: https://img.shields.io/visual-studio-marketplace/d/tacheometrist.testez-companion
-[marketplace-url]: https://marketplace.visualstudio.com/items?itemName=tacheometrist.testez-companion
-[license-shield]: https://img.shields.io/github/license/tacheometry/testez-companion
-[license-url]: https://github.com/tacheometry/testez-companion/blob/master/LICENSE.md
-
-<img align="right" src="https://user-images.githubusercontent.com/39647014/116725501-a2944700-a9ea-11eb-80ce-f5699b0c6568.png"/>
-
-# TestEZ Companion
+# Jest-Lua Companion
 
 [![License][license-shield]][license-url]
-[![Visual Studio Marketplace][marketplace-shield]][marketplace-url]
 
-TestEZ Companion is a Visual Studio Code extension that enables Roblox developers to preview their [TestEZ](https://roblox.github.io/testez/) test results inside VS Code.
-![](https://user-images.githubusercontent.com/39647014/115806038-bdfdc180-a3ee-11eb-9c7c-f85b4491a8bc.png)
+Jest-Lua Companion is a Visual Studio Code extension that enables Roblox developers to run their [Jest-Lua](https://github.com/Roblox/jest-lua) tests via OpenCloud and preview the results inside VS Code.
 
-## CLI
+## Setup
 
-A community made project for CLI usage is available: https://github.com/jackTabsCode/testez-companion-cli
+### 1. Configure OpenCloud Credentials
 
-# Contributing
+Create a `.env` file in your workspace root with your OpenCloud credentials:
 
-## VS Code extension
-
-### Set up
-
-After getting the repository, run `npm i` to install all dependencies.
-
-### Running tests
-
-Before compiling, running tests is highly encouraged. This is done through [Jasmine](https://jasmine.github.io).
-
-- To run tests once, run: `npm test`
-- To run tests in watch mode, run: `npm run test:watch`
-
-### Compiling
-
-The VS Code extension uses [TypeScript](https://www.typescriptlang.org), and is then bundled with [webpack](https://webpack.js.org).
-
-- To compile once (in production mode), run: `npm run build`
-- To compile in watch mode, run `npm run watch`
-
-## Roblox Studio plugin
-
-Make sure to first initialize git submodules:
-
-```
-git submodule init
-git submodule update
+```env
+ROBLOX_API_KEY=your_opencloud_api_key_here
+ROBLOX_UNIVERSE_ID=12345678
+ROBLOX_PLACE_ID=87654321
 ```
 
-### Installing the plugin
+### 2. Configure Test Roots
 
-These commands are to be run inside the `plugin` directory of the repository.
+Create a `jest-lua-companion.toml` file to specify where your tests are located:
 
-#### By building it with Rojo
+```toml
+# These are the locations of your test files (descendants are searched too)
+roots = ["src/tests", "tests"]
 
-1. Run `rojo build`, and move the output file to your Studio plugins directory.
-   ```
-   rojo build -o "TestEZ Companion.rbxmx"
-   ```
+[extraOptions]
+# Optional: Jest-Lua specific options can be added here
+# showTimingInfo = true
+# testNamePattern = ".*"
+```
 
-On Windows, the location of Studio plugins is `%LOCALAPPDATA%\Roblox\Plugins`.
+### 3. Test Script Structure
 
-On macOS, the location of Studio plugins is `~/Documents/Roblox/Plugins`.
+The extension expects your project to have the following structure:
+- `scripts/shell/test.sh` - Your test execution script
+- `scripts/python/` - Python scripts for OpenCloud integration
+- Your Lua/Luau test files in the locations specified in `roots`
 
-#### By copying from Studio
+### 4. Running Tests
 
-1. Serve the `testing.project.json` file:
-   ```
-   rojo serve testing.project.json
-   ```
-2. Under `ReplicatedStorage`, right click the `TestEZ Companion` folder, and select `Save as Local Plugin...`. Selecting `Save to File...`, and saving the `rbxm*` model in your plugin directory also works.
+- Use the **Run tests** command from the Command Palette
+- Press `Ctrl+;` (or `Cmd+;` on macOS)
+- Click the play button in the Jest-Lua Companion view
+- Enable `runTestsOnSave` to automatically run tests when files change
 
-## Test place
+## Features
 
-A basic place to test the functionality of spec files is https://github.com/tacheometry/testez-basic-place.
+- **OpenCloud Integration**: Run tests directly via Roblox OpenCloud APIs
+- **No Studio Plugin Required**: All test execution happens through OpenCloud
+- **Test Explorer**: View passing, failing, and skipped tests in organized tree views
+- **Error Details**: Click on failing tests to see detailed error information
+- **Auto-run on Save**: Optionally run tests automatically when files change
+
+## Requirements
+
+- [Roblox OpenCloud API Key](https://create.roblox.com/docs/cloud/open-cloud)
+- Python with the necessary dependencies for OpenCloud scripts
+- Bash shell for running test scripts
+
+## Extension Structure
+
+- `extension/` - The VS Code extension source code
+- `scripts/` - Test execution scripts and OpenCloud integration
+- `jest-lua-companion.toml.example` - Example configuration file
+- `.env.example` - Example environment variables file
+
+[license-shield]: https://img.shields.io/github/license/daemon6109/jest-companion.svg?style=flat-square
+[license-url]: https://github.com/daemon6109/jest-companion/blob/master/LICENSE

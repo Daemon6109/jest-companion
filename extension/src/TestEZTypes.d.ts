@@ -1,13 +1,13 @@
-declare namespace TestEZ {
+declare namespace JestLua {
 	export type PlanNode = {
 		phrase: string;
 		type:
-			| "Describe"
-			| "It"
-			| "BeforeAll"
-			| "AfterAll"
-			| "BeforeEach"
-			| "AfterEach";
+		| "Describe"
+		| "It"
+		| "BeforeAll"
+		| "AfterAll"
+		| "BeforeEach"
+		| "AfterEach";
 		modifier: "None" | "Skip" | "Focus";
 	};
 	export type ReporterChildNode = {
@@ -24,6 +24,13 @@ declare namespace TestEZ {
 		successCount: number;
 		// there are more keys here, but they aren't used
 	};
+}
+
+// Keep TestEZ namespace for compatibility during transition
+declare namespace TestEZ {
+	export type PlanNode = JestLua.PlanNode;
+	export type ReporterChildNode = JestLua.ReporterChildNode;
+	export type ReporterOutput = JestLua.ReporterOutput;
 }
 
 export default TestEZ;

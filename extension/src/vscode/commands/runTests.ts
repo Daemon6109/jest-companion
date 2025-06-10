@@ -4,9 +4,8 @@ import * as toml from "toml";
 import * as vscode from "vscode";
 import Ajv from "ajv";
 import getWorkspaceFolder from "../getWorkspaceFolder";
-import httpTestResultProviderGenerator from "../../testResultProviders/httpTestResultProviderGenerator";
+import openCloudTestResultProvider from "../../testResultProviders/openCloudTestResultProvider";
 import type TestRoots from "../../TestRoots";
-import { selectPlace } from "../selectPlace";
 import getTestTimeoutPreference from "../preferences/getTestTimeoutPreference";
 
 const ajv = new Ajv();
@@ -14,7 +13,6 @@ const ajv = new Ajv();
 type ConfigFileType = {
 	roots: TestRoots;
 	extraOptions?: object;
-	port?: number;
 };
 const configFileSchema = {
 	type: "object",
@@ -62,7 +60,7 @@ export default async (runAutomatically?: boolean) => {
 
 	const configPath = vscode.Uri.joinPath(
 		workspaceFolder.uri,
-		"./testez-companion.toml"
+		"./jest-lua-companion.toml"
 	).fsPath;
 	let config: ConfigFileType;
 	try {
@@ -74,14 +72,22 @@ export default async (runAutomatically?: boolean) => {
 		);
 	} catch (e) {
 		return optionallyShowError(
-			`Couldn't parse/read from testez-companion.toml (${configPath}).`
+			`Couldn't parse/read from jest-lua-companion.toml (${configPath}).`
 		);
 	}
 
 	if (!validatorFunc(config) as boolean)
 		return vscode.window.showErrorMessage(
-			`Invalid testez-companion.toml format! Please look at the README examples.`
+			`Invalid jest-lua-companion.toml format! Please look at the README examples.`
 		);
+
+	// Check for .env file with required OpenCloud credentials
+	const envPath = vscode.Uri.joinPath(workspaceFolder.uri, ".env").fsPath;
+	if (!fs.existsSync(envPath)) {
+		return optionallyShowError(
+			"Missing .env file with OpenCloud credentials. Please create a .env file with ROBLOX_API_KEY, ROBLOX_UNIVERSE_ID, and ROBLOX_PLACE_ID."
+		);
+	}
 
 	store.dispatch({
 		type: "STARTED_RUNNING_TESTS",
@@ -89,27 +95,7 @@ export default async (runAutomatically?: boolean) => {
 
 	const { roots, extraOptions } = config;
 
-	httpTestResultProviderGenerator(28859, async (places) => {
-		const { selectedPlaceGUID: storeSelectedPlaceGUID } = store.getState();
-
-		if (storeSelectedPlaceGUID)
-			for (const place of places) {
-				if (place.placeGUID === storeSelectedPlaceGUID)
-					return storeSelectedPlaceGUID;
-			}
-
-		const selectedPlace = await selectPlace(places);
-		store.dispatch({
-			type: "GOT_AVAILABLE_PLACES",
-			places,
-		});
-		store.dispatch({
-			type: "PLACE_SELECTED",
-			placeGUID: selectedPlace,
-		});
-
-		return selectedPlace;
-	})(
+	openCloudTestResultProvider(
 		getTestTimeoutPreference() * 1000,
 		{
 			testRoots: roots,
@@ -127,8 +113,7 @@ export default async (runAutomatically?: boolean) => {
 				type: "GOT_TEST_RESULTS",
 				results: output,
 			});
-		})
-		.catch((rejectReason) => {
+		}).catch((rejectReason) => {
 			store.dispatch({
 				type: "TESTING_FAILED",
 				reason: rejectReason,

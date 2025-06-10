@@ -1,17 +1,17 @@
 {
-	"name": "testez-companion",
-	"displayName": "TestEZ Companion",
-	"description": "Run TestEZ tests and view their results right from VS Code",
+	"name": "jest-lua-companion",
+	"displayName": "Jest-Lua Companion",
+	"description": "Run Jest-Lua tests via OpenCloud and view their results right from VS Code",
 	"icon": "icons/icon.png",
 	"badges": [
 		{
-			"url": "https://img.shields.io/github/stars/tacheometry/testez-companion?logo=github",
-			"href": "https://github.com/tacheometry/testez-companion",
+			"url": "https://img.shields.io/github/stars/daemon6109/jest-companion?logo=github",
+			"href": "https://github.com/daemon6109/jest-companion",
 			"description": "GitHub repository"
 		}
 	],
 	"license": "GPL-3.0",
-	"version": "2.1.4",
+	"version": "1.0.0",
 	"engines": {
 		"vscode": "^1.74.0"
 	},
@@ -20,22 +20,23 @@
 	],
 	"keywords": [
 		"roblox",
-		"testez"
+		"jest",
+		"jest-lua",
+		"opencloud"
 	],
 	"author": {
-		"name": "tacheometry",
-		"url": "http://github.com/tacheometry/"
+		"name": "daemon6109",
+		"url": "http://github.com/daemon6109/"
 	},
-	"publisher": "tacheometrist",
+	"publisher": "daemon6109",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/tacheometry/testez-companion.git"
+		"url": "https://github.com/daemon6109/jest-companion.git"
 	},
 	"main": "./dist/extension.js",
 	"scripts": {
 		"vscode:prepublish": "npm run build",
-		"build": "webpack build --mode production --config ./webpack.config.js && npm run build:plugin",
-		"build:plugin": "cd ../plugin && rojo build -o \"../extension/TestEZ_Companion.rbxm\"",
+		"build": "webpack build --mode production --config ./webpack.config.js",
 		"watch": "webpack watch --mode development --config ./webpack.config.js",
 		"test": "jasmine --config=./jasmine.json",
 		"test:watch": "nodemon --ext ts --exec \"npm test\"",
@@ -63,30 +64,28 @@
 	},
 	"activationEvents": [
 		"workspaceContains:*.project.json",
-		"onCommand:testez-companion.runTests",
-		"onCommand:testez-companion.installPlugin",
-		"onCommand:testez-companion.buildPlugin"
+		"onCommand:jest-lua-companion.runTests"
 	],
 	"contributes": {
 		"configuration": {
-			"title": "TestEZ Companion",
+			"title": "Jest-Lua Companion",
 			"properties": {
-				"testez-companion.timeout": {
+				"jest-lua-companion.timeout": {
 					"type": "number",
-					"default": 5,
-					"description": "The time (in seconds) it takes to cancel testing after no response has been received from the Roblox Studio extension."
+					"default": 30,
+					"description": "The time (in seconds) it takes to cancel testing after no response has been received from OpenCloud."
 				},
-				"testez-companion.runTestsOnSave": {
+				"jest-lua-companion.runTestsOnSave": {
 					"type": "boolean",
 					"default": false,
 					"description": "Whether to run tests whenever a lua/luau file in the project is changed."
 				},
-				"testez-companion.runTestsOnSaveFilter": {
+				"jest-lua-companion.runTestsOnSaveFilter": {
 					"type": "string",
 					"default": "**/*.{lua,luau,json}",
 					"description": "Glob pattern to use for detecting file changes. Used in running tests automatically when the runTestsOnSave option is enabled. Leave empty to detect .lua, .luau, and .json files all across the current workspace. Glob used: https://code.visualstudio.com/api/references/vscode-api#GlobPattern"
 				},
-				"testez-companion.runTestsOnSaveDebounce": {
+				"jest-lua-companion.runTestsOnSaveDebounce": {
 					"type": "number",
 					"default": 0.2,
 					"description": "The time (in seconds) for the \"run tests on save\" debounce. File saves within this window are ignored, and do not cause another test run."
@@ -96,29 +95,29 @@
 		"viewsContainers": {
 			"activitybar": [
 				{
-					"id": "testez-companion_container",
-					"title": "TestEZ Companion",
+					"id": "jest-lua-companion_container",
+					"title": "Jest-Lua Companion",
 					"icon": "./icons/testez-companion.svg"
 				}
 			]
 		},
 		"views": {
-			"testez-companion_container": [
+			"jest-lua-companion_container": [
 				{
-					"id": "testez-companion_results",
+					"id": "jest-lua-companion_results",
 					"name": "Test explorer"
 				},
 				{
-					"id": "testez-companion_failingTests",
+					"id": "jest-lua-companion_failingTests",
 					"name": "Failing tests"
 				},
 				{
-					"id": "testez-companion_passingTests",
+					"id": "jest-lua-companion_passingTests",
 					"name": "Passing tests",
 					"visibility": "collapsed"
 				},
 				{
-					"id": "testez-companion_skippedTests",
+					"id": "jest-lua-companion_skippedTests",
 					"name": "Skipped tests",
 					"visibility": "collapsed"
 				}
@@ -127,55 +126,40 @@
 		"menus": {
 			"view/title": [
 				{
-					"command": "testez-companion.runTests",
+					"command": "jest-lua-companion.runTests",
 					"group": "navigation",
-					"when": "view == testez-companion_results || view == testez-companion_failingTests || view == testez-companion_passingTests || view == testez-companion_skippedTests"
+					"when": "view == jest-lua-companion_results || view == jest-lua-companion_failingTests || view == jest-lua-companion_passingTests || view == jest-lua-companion_skippedTests"
 				}
 			],
 			"view/item/context": [
 				{
-					"command": "testez-companion.openTestError",
+					"command": "jest-lua-companion.openTestError",
 					"when": "viewItem == failingTest"
 				}
 			]
 		},
 		"viewsWelcome": [
 			{
-				"view": "testez-companion_results",
-				"contents": "Once tests are run in Studio, a summary of them appears here.\n[Run tests](command:testez-companion.runTests)\nThe TestEZ Companion plugin for Roblox Studio must be installed, and must be running to be able to receive test results.\nAfter installing, the game place might need to be reopened, or Studio might need to be restarted.\nVisit [the extension page](https://marketplace.visualstudio.com/items?itemName=tacheometrist.testez-companion) for more information on setting up.\n[Install plugin](command:testez-companion.installPlugin)"
+				"view": "jest-lua-companion_results",
+				"contents": "Once tests are run via OpenCloud, a summary of them appears here.\n[Run tests](command:jest-lua-companion.runTests)\nMake sure you have configured your .env file with ROBLOX_API_KEY, ROBLOX_UNIVERSE_ID, and ROBLOX_PLACE_ID.\nVisit [the extension page](https://marketplace.visualstudio.com/items?itemName=daemon6109.jest-lua-companion) for more information on setting up."
 			}
 		],
 		"commands": [
 			{
-				"title": "Run tests in Studio",
-				"command": "testez-companion.runTests",
-				"category": "TestEZ Companion",
+				"title": "Run tests via OpenCloud",
+				"command": "jest-lua-companion.runTests",
+				"category": "Jest-Lua Companion",
 				"icon": "$(play)"
 			},
 			{
-				"title": "Install Studio plugin",
-				"command": "testez-companion.installPlugin",
-				"category": "TestEZ Companion"
-			},
-			{
-				"title": "Save plugin .rbxm",
-				"command": "testez-companion.buildPlugin",
-				"category": "TestEZ Companion"
-			},
-			{
-				"title": "Select place",
-				"command": "testez-companion.selectPlace",
-				"category": "TestEZ Companion"
-			},
-			{
 				"title": "Open test error",
-				"command": "testez-companion.openTestError",
+				"command": "jest-lua-companion.openTestError",
 				"enablement": "viewItem == failingTest"
 			}
 		],
 		"keybindings": [
 			{
-				"command": "testez-companion.runTests",
+				"command": "jest-lua-companion.runTests",
 				"key": "ctrl+;",
 				"mac": "cmd+;"
 			}
